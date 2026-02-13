@@ -17,20 +17,15 @@ def chunk_dag():
     def process_and_upload():
         hook = WasbHook(wasb_conn_id='azure_blob_bronze')
         
-        # 1. Lấy đường dẫn chuẩn đến thư mục dataset bên trong container
-        # Dùng Path(__file__) để lấy vị trí file DAG hiện tại, sau đó đi ngược lên
         base_path = Path(__file__).parent.parent 
         input_dir = base_path / 'include' / 'dataset'
         temp_dir = base_path / 'include' / 'temp'
         
-        # Tạo thư mục temp nếu chưa có để chứa file tạm
         os.makedirs(temp_dir, exist_ok=True)
 
-        # 2. Kiểm tra nếu thư mục dataset tồn tại
         if not input_dir.exists():
             raise FileNotFoundError(f"Không tìm thấy thư mục tại: {input_dir}")
 
-        # 3. Quét tất cả file .csv trong thư mục dataset (sales.csv, products.csv...)
         csv_files = list(input_dir.glob('*.csv'))
         print(f"Tìm thấy {len(csv_files)} file: {[f.name for f in csv_files]}")
 
@@ -44,10 +39,8 @@ def chunk_dag():
             if local_temp.exists():
                 os.remove(local_temp)
 
-            # Đọc theo chunk 500 dòng để tiết kiệm RAM laptop
             try:
                 for chunk in pd.read_csv(file_path, chunksize=500):
-                    # Ghi nối (append) vào file tạm
                     chunk.to_csv(
                         local_temp, 
                         mode='a', 
@@ -66,7 +59,6 @@ def chunk_dag():
                     overwrite=True
                 )
                 
-                # Dọn dẹp file tạm sau khi upload xong file đó
                 os.remove(local_temp)
                 
             except Exception as e:
