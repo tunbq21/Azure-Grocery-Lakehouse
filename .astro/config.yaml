@@ -1,0 +1,9 @@
+project:
+  name: grocery-sales-project
+
+port:
+  dev: 3000
+  prod: 8080
+
+postgres:
+  port: 5436
