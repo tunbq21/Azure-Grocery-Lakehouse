@@ -5,6 +5,7 @@ from airflow.providers.microsoft.azure.hooks.wasb import WasbHook
 from datetime import datetime
 from pathlib import Path
 
+
 @dag(
     dag_id='bulk_chunk_upload_to_bronze', 
     start_date=datetime(2026, 1, 1), 
